@@ -16,7 +16,7 @@ en SHAP pueden poner en evidencia inestabilidad y baja faithfulness en en subgru
 de instancias y también de forma despareja en subgrupos definidos por características usadas de 
 forma discriminatoria, como por ejemplo el barrio en el que se encuentran subgrupos específicos 
 de instancias,comprometiendo su utilidad real para operadores que deben tomar decisiones bajo 
-presión de tiempo.
+presión de tiempo. 
 
 ---
 
