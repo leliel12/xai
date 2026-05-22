@@ -5,6 +5,8 @@
 
 ## Introducción
 
+Esta propuesta de trabajo se inspira en los artículos (Olah et al., 2020) y (Olah, 2022) de la Unidad V de este curso, donde se trata la interpretabilidad de las activaciones y pesos de las redes neuronales mediante la asociación (en la medida de lo posible) entre features y neuronas.
+
 Los modelos de ML, y en particular las redes neuronales, no son naturalmente interpretables. En un intento por lograr algo de comprensión sobre los "criterios" que el modelo aprendió, se suelen analizar los pesos, las activaciones de capas intermedias y el efecto de variar las entradas.
 
 Todo aquel que haya incursionado en el análisis de pesos y activaciones habrá sentido la desilución de no encontrar los claros patrones que esperaba. Hay (por lo menos) dos razones que lo explican:
@@ -48,4 +50,6 @@ La idea es usar una red neuronal tipo word2vec (Skip-Gram o CBOW). Si el modelo 
 
 Elhage, N., Hume, T., Olsson, C., Schiefer, N., Henighan, T., Kravec, S., ... & Olah, C. (2022). Toy models of superposition. arXiv preprint arXiv:2209.10652.
 
+Olah, C., Cammarata, N., Schubert, L., Goh, G., Petrov, M., & Carter, S. (2020). Zoom in: An introduction to circuits. Distill, 5(3), e00024-001.
 
+Olah, C. (June 27, 2022). Mechanistic Interpretability, Variables, and the Importance of Interpretable Bases. Transformer Circuits Thread. https://transformer-circuits.pub/2022/mech-interp-essay
