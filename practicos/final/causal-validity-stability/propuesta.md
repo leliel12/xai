@@ -31,3 +31,11 @@ A methodological premise frames the design: mechanistic interpretability require
 
 ## Link to the course
 The project sits squarely in mechanistic interpretability (circuits, sparse autoencoders, activation patching) and extends the contrastive-explanation thread of Lecture 24. It instantiates two of the suggested experiment axes at once: a critical, comparative evaluation of XAI methods, and a new metric with empirical justification. A natural continuation (2027) is to test whether the stability ordering observed on small open models transfers to larger, reasoning-capable open models.
+
+## References
+- Yin, K., & Neubig, G. (2022). *Interpreting Language Models with Contrastive Explanations.* EMNLP 2022. arXiv:2202.10419.
+- Meng, K., Bau, D., Andonian, A., & Belinkov, Y. (2022). *Locating and Editing Factual Associations in GPT.* NeurIPS 2022. arXiv:2202.05262.
+- Wang, K., Variengien, A., Conmy, A., Shlegeris, B., & Steinhardt, J. (2022). *Interpretability in the Wild: a Circuit for Indirect Object Identification in GPT-2 Small.* arXiv:2211.00593.
+- Cunningham, H., Ewart, A., Riggs, L., Huben, R., & Sharkey, L. (2023). *Sparse Autoencoders Find Highly Interpretable Features in Language Models.* arXiv:2309.08600.
+- Ameisen, E., Lindsey, J., et al. (2025). *Circuit Tracing: Revealing Computational Graphs in Language Models.* Transformer Circuits Thread, Anthropic.
+- *CIRCUS: Circuit Consensus under Uncertainty via Stability Ensembles.* (2026). arXiv:2603.00523.
