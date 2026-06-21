@@ -50,7 +50,7 @@ El experimento consiste en comparar, sobre los mismos modelos y las mismas propi
 
 La propiedad a testear es **equidad individual**: dado un input $x$, el modelo debe predecir lo mismo si se cambia únicamente el atributo sensible (sexo o raza) y se mantienen fijas el resto de las features. Formalmente:
 
-$$P(f, x) \iff f(x) = f(\text{flip\_sensitive}(x))$$
+$$P(f, x) \iff f(x) = f(\text{flipsensitive}(x))$$
 
 Se elige equidad individual por dos razones. Primero, es directamente relevante para los sesgos conocidos de Adult Income y COMPAS. Segundo, su estructura se adapta naturalmente al paradigma de contrafactuales: el witness que viola la propiedad es exactamente el par $(x, x')$ con $x'$ igual a $x$ salvo en el atributo sensible, lo que hace que DiCE opere en el subespacio correcto por diseño.
 
