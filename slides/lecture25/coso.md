@@ -1,5 +1,5 @@
 ---
-title: "\\emoji{brain} XAI: Chess Knowledge in AlphaZero \\& Interpreting Stable Diffusion"
+title: "\\emoji{wtf} XAI: Chess Knowledge in AlphaZero \\& Interpreting Stable Diffusion"
 bibliography: references.bib
 
 ---
@@ -10,11 +10,32 @@ bibliography: references.bib
 
 ---
 
+# Paper 1
+
 \begin{center}
-\Large\textbf{Acquisition of Chess Knowledge in AlphaZero}\\
-\vspace{0.5cm}
-\normalsize McGrath, Kapishnikov, Tomašev, Pearce, Hassabis, Kim, Paquet \& Kramnik (2022)
+\includegraphics[width=0.85\columnwidth]{imgs/paper1.png}
 \end{center}
+
+[@mcgrath2022acquisition]
+
+---
+
+# Learning from machines (AlphaZero)
+
+:::: columns
+::: column
+
+- Most methods we have looked so far try to interpret algorithms trained on human-generated data and labels
+    - These interpretations may resemble human-understandable representations only because they learned from such data
+- Can we interpret what the algorithms has been learning through its self-play training process?
+
+:::
+::: column
+
+![](imgs/manochess.png)
+
+:::
+::::
 
 ---
 
@@ -33,13 +54,23 @@ bibliography: references.bib
 
 # Interpretability
 
-- Concept-based (post-hoc) interpretability
-  - Network probing / important features / mechanistic understanding
-  - Challenges: correlation not causal
+**Concept-based (post-hoc) interpretability**
 
-- Explainability in reinforcement learning
-  - Structural causal models / reward difference explanations
-  - Identify interesting points in behavioral trajectories
+- **Network probing:** detect human concepts from internal activations
+  using linear classifiers (*concept activation vectors*)
+- **Important features:** which concepts matter most for model predictions?
+- **Mechanistic understanding:** what algorithms do individual layers implement?
+- **Key challenge:** probing measures *correlation*, not *causation* —
+  a concept linearly decodable from activations may not causally drive behavior
+
+**Explainability in reinforcement learning**
+
+- **Structural causal models:** simulate interventions on actions
+  to answer counterfactual questions (*what if a different move was played?*)
+- **Reward difference explanations:** why was action $a$ chosen over $a'$?
+  Quantify the expected reward gap
+- **Behavioral trajectory analysis:** identify critical decision points
+  where the agent's policy changes most dramatically
 
 ---
 
@@ -50,19 +81,30 @@ Can humans learn the machine's strategy?
 - Does not rely on human-labeled data
 - Tree-based organization / saliency maps
 - Natural language processing to generate move-by-move commentary
-- **This paper:** captures "intuitive" aspect of chess play by understanding networks that produce value assessment ($v$) and candidate move (**p**)
+- **This paper:** captures "intuitive" aspect of chess play by understanding networks that produce value assessment (**v**) and candidate move (**p**)
 
 $$\mathbf{p},\ v = f_\theta(\mathbf{z}^0)$$
+
+## In plain English
+
+$\mathbf{z}^0$ is the board position fed to the network; $\mathbf{p}$ is
+a probability distribution over legal moves (what AlphaZero *wants* to play),
+and $v \in [-1, 1]$ is its estimate of who is winning.
+The question of the paper is: *what does $f_\theta$ know about chess
+to produce these outputs?*
 
 ---
 
 # AlphaZero: Network Structure and Training {.fragile}
 
-\begin{columns}
-\begin{column}{0.50\textwidth}
-\includegraphics[width=\columnwidth]{imgs/alphazero_network.png}
-\end{column}
-\begin{column}{0.46\textwidth}
+:::: columns
+::: column
+
+\includegraphics[width=.9\columnwidth]{imgs/alphazero_network.png}
+
+:::
+::: column
+
 $$\mathbf{p},\ v = f_\theta(\mathbf{z}^0)$$
 
 \vspace{0.4cm}
@@ -72,28 +114,65 @@ $$\mathbf{z}^l = f^l(\mathbf{z}^{l-1}) = \text{ReLU}\!\left(\mathbf{z}^{l-1} + g
 \vspace{0.4cm}
 
 $$\mathbf{z}^l = f^{1:l}(\mathbf{z}^0) = f^l \circ \cdots \circ f^2 \circ f^1(\mathbf{z}^0)$$
-\end{column}
-\end{columns}
+
+:::
+::::
+
 
 ---
 
-\begin{center}
-\vfill
-\Large Probing for Concepts
-\vfill
-\end{center}
+# AlphaZero: Network Structure and Training {.fragile}
+
+:::: columns
+::: column
+
+\includegraphics[width=.9\columnwidth]{imgs/alphazero_network.png}
+
+:::
+::: column
+
+## In plain English
+In the diagram, each box in the red rectangle is one residual block.
+The **"add; ReLU"** arrow inside each box is where the network adds
+the unmodified input to the learned transformation — instead of
+replacing it. This repeats 20 times, building progressively more
+abstract representations of the board.
+
+:::
+::::
 
 ---
 
-# Encoding of Human Conceptual Knowledge {.fragile}
+# Probing for Concepts - Encoding of Human Conceptual Knowledge {.fragile}
 
+\fontsize{11pt}{10pt}
 \textbf{Question:} Can human concepts be easily predicted from the network's internal representation?
 
 \textbf{Concept:} User-defined function mapping network input to real line:
 
-$$c(\mathbf{z}^0) = \begin{cases} 1 & \text{if } \mathbf{z}^0 \text{ contains a bishop-pair for the playing side} \\ 0 & \text{otherwise} \end{cases}$$
+$$c(\mathbf{z}^0) = \begin{cases} 1 & \text{if } \mathbf{z}^0 \text{ contains a bishop-pair U+2657 for the playing side} \\ 0 & \text{otherwise} \end{cases}$$
 
 \textbf{Approach:} Train a sparse linear regression model from activations $\mathbf{z}^l$ at layer $l$ and training step $t$ to human concept $j$
+
+\fontsize{9pt}{8pt}
+:::  columns
+:::: column
+## In plain English
+A *concept* is any chess idea a human can define on a board position —
+from simple material facts (does the player have the bishop pair?)
+to complex positional ideas (is the king safe?).
+If a simple linear model can predict $c_j$ from $\mathbf{z}^l$,
+the concept is **linearly encoded** in that layer.
+::::
+
+:::: column
+## Key Insight
+The network was never explicitly trained to represent chess concepts —
+it only learned to predict moves and outcomes via self-play.
+Finding linearly decodable concepts means AlphaZero **spontaneously
+developed human-like internal representations**.
+::::
+:::
 
 ---
 
@@ -107,22 +186,97 @@ $$\mathbf{w}_{jlt},\ b_{jlt} = \min_{\mathbf{w},b} \frac{1}{N}\left\|\mathbf{w}^
 - **Controls:** Regression from $\mathbf{z}^0$ and random concept regression
 - **Evaluation:** $R^2$ value, fraction of variance in concept explained by network activation
 
+:::  columns
+:::: column
+## In plain English
+Fit a Lasso regression: predict concept $c_j$ from activations $\mathbf{z}^l$.
+The $\ell_1$ penalty keeps only the **few neurons** that actually encode the concept.
+::::
+
+:::: column
+## Key Insight
+High $R^2$ = the concept is **linearly readable** from that layer.
+Repeat for every layer $l$ and checkpoint $t$ $\rightarrow$ a map of *what, when, and where*
+each concept is learned.
+::::
+:::
+
 ---
 
-# Evolution of Human Concepts in AlphaZero
+# Evolution of Human Concepts in AlphaZero 1/2
 
+:::: columns
+::: {.column width="27%"}
 \begin{center}
-\includegraphics[width=0.88\columnwidth]{imgs/human_concepts_evolution.png}
+\includegraphics[width=\columnwidth]{imgs/human_concepts_evolution.png}
 \end{center}
 
+:::
+::: {.column width="60%"}
+
+
+\vspace{1em}
+Each surface is a *what–when–where* plot: probe $R^2$ as a function of
+**network depth** (Block) and **training time** (Training steps).
+
+- **x-axis:** training steps ($10^0$ → $10^6$) — *when* is it learned?
+- **y-axis:** block index (1–20) — *where* in the network?
+- **z-axis:** test accuracy — *how well* is the concept encoded?
+
+:::
+::::
+
 ---
 
-# Key Findings
+# Evolution of Human Concepts in AlphaZero 2/2
 
-1. **Grokking:** Many concepts begin to increase in accuracy around 32,000 steps
-2. Drop in linearly-available information in later layers for some concepts
-3. Some concepts **cannot** be regressed: sparsity partially obstructs ability to relate **highly-distributed representations** to concepts
-4. **Learning from prediction errors:** regression errors may point to a "difference of opinion" with Stockfish
+:::: columns
+::: {.column width="27%"}
+\begin{center}
+\includegraphics[width=\columnwidth]{imgs/human_concepts_evolution.png}
+\end{center}
+
+:::
+::: {.column width="60%"}
+
+\vspace{1em}
+- A surface that rises early and stays high means AlphaZero learned
+that concept **fast and robustly** (e.g. `in_check`).
+- A surface that stays flat means the concept is **never linearly encoded** (e.g. `threats_t_ph` — still dark/purple throughout).
+
+- Simple tactical concepts (`in_check`, `can_capture_queen`) emerge
+**early and in middle layers**. Complex strategic concepts
+(`total_t_ph`, `has_mate_threat`) require **more training steps**
+and tend to concentrate in **deeper layers** — mirroring how
+humans learn chess: tactics before strategy.
+
+:::
+::::
+
+---
+
+# Key Findings ---
+
+1. **Grokking:** Most concepts emerge abruptly around **32,000 training steps** accuracy is near zero before, then jumps and stabilizes. AlphaZero does not learn gradually; it *clicks*.
+
+2. **Information drop in deep layers:** for some concepts, probe accuracy
+   *decreases* in the last blocks — the network re-encodes information
+   in a less linearly-separable form as it approaches the output heads.
+
+3. **Highly-distributed representations:** some concepts **cannot** be probed —
+   sparsity forces the probe to use few neurons, but if the concept is
+   spread across many neurons simultaneously, a sparse linear probe cannot
+   recover it.
+
+4. **Learning from errors:** positions where the probe fails systematically
+   may reflect a genuine **"difference of opinion"** between AlphaZero
+   and Stockfish — not a probe failure, but AlphaZero evaluating the
+   position by a different (possibly superior) criterion.
+
+## Key Insight
+Findings 3 and 4 are honest about the method's limits:
+absence of a detectable concept $\neq$ absence of the concept —
+it may simply be encoded in a way a **linear probe cannot see**.
 
 ---
 
@@ -158,7 +312,13 @@ $$\mathbf{w}_{jlt},\ b_{jlt} = \min_{\mathbf{w},b} \frac{1}{N}\left\|\mathbf{w}^
 
 \begin{center}
 \includegraphics[width=0.88\columnwidth]{imgs/progression_human_history.png}
+
+\vfill
+
+Each color represents a first move (e.g. e4, d4, Nf3), with its area showing how often humans played it across history — serving as a reference to compare whether AlphaZero's training recapitulates or diverges from human chess evolution.
+
 \end{center}
+
 
 ---
 
@@ -166,23 +326,42 @@ $$\mathbf{w}_{jlt},\ b_{jlt} = \min_{\mathbf{w},b} \frac{1}{N}\left\|\mathbf{w}^
 
 \begin{center}
 \includegraphics[width=0.88\columnwidth]{imgs/progression_alphazero_history.png}
+
+\vfill
+
+The three panels show \textbf{three independent AlphaZero training runs}: 
+the distribution is remarkably consistent across runs --- AlphaZero converges 
+to similar move preferences regardless of random initialization. Before 64,000 
+steps, chaotic exploration dominates; after that, the distribution stabilizes 
+abruptly (\textbf{grokking}). Compared to human history, AlphaZero settles on 
+a mix of \texttt{d4} and \texttt{e4} but with a more diverse and volatile 
+distribution --- \textbf{it does not recapitulate human chess history}, but 
+finds its own path.
+
 \end{center}
+
 
 ---
 
 # Progression of AlphaZero's Chess Knowledge
 
-\begin{itemize}
-\item \textbf{Methodology:} At different training steps (up to 128k), examine AlphaZero's move tendencies and concept encodings
-\end{itemize}
+**Methodology:** At different training checkpoints (up to 128k steps),
+examine AlphaZero's move tendencies and concept probe accuracy.
 
-\begin{alertblock}{Primary Takeaways}
-\begin{enumerate}
-\item AlphaZero learns standard opening theory early on
-\item AlphaZero learns material values before more complex positional concepts
-\end{enumerate}
-\textbf{Both reinforce idea that AlphaZero learns basic human chess concepts first}
-\end{alertblock}
+> **Primary Takeaways**
+>
+> 1. AlphaZero learns standard opening theory **early** —
+>    move preferences stabilize and match known theory within the first 64k steps
+> 2. AlphaZero learns **material values before positional concepts** —
+>    piece counts are encoded first; king safety and mobility come later
+>
+> **Both findings reinforce that AlphaZero learns basic human chess concepts first**
+
+## Key Insight
+This mirrors the curriculum of a human chess student:
+openings and material counting are taught before strategic positional play.
+AlphaZero rediscovers this ordering **from scratch**, via self-play alone —
+with no exposure to human games or pedagogy.
 
 ---
 
@@ -198,42 +377,80 @@ $$\mathbf{w}_{jlt},\ b_{jlt} = \min_{\mathbf{w},b} \frac{1}{N}\left\|\mathbf{w}^
 \includegraphics[width=0.85\columnwidth]{imgs/opening_theory_plots.png}
 \end{center}
 
+- **Graph 1:** What move should White play to open the game?
+- **Graph 2:** What should White play on move 2, after Black responds with `e5`?
+- **Graph 3:** How should Black respond to White's opening move `e4`?
+
+
 ---
 
-# Material vs. Positional Knowledge {.fragile}
+# Material vs. Positional Knowledge
 
-\begin{enumerate}
-\item $\sim$30k training steps: Piece Values develop, converge $\sim$100k
-\item King Safety, Mobility concepts emerge after Material
-  \begin{itemize}
-  \item More complex concepts require more training time
-  \end{itemize}
-\end{enumerate}
+::::: columns
 
-\begin{center}
-\includegraphics[width=0.70\columnwidth]{imgs/material_positional_plots.png}
-\end{center}
+::: {.column width="27%"}
+\includegraphics[width=\columnwidth]{imgs/material_positional_plots.png}
+::::
 
-$$\hat{v}_{\mathbf{w},b}(\mathbf{z}^0) = \tanh\!\left(\mathbf{w}^T \mathbf{c}(\mathbf{z}^0) + b\right) \qquad \mathbf{w}_t, b_t = \min_{\mathbf{w},b} \frac{1}{N}\sum_n \!\left|\hat{v}_{\mathbf{w},b}(\mathbf{z}^0_n) - v_{\theta_t}(\mathbf{z}^0_n)\right|$$
+::: {.column width="60%"}
+
+**Top — Material:**
+
+The *relative value of pieces*, measured in pawns. Standard human values are: Queen=9, Rook=5, Bishop=3, Knight=3. AlphaZero independently rediscovers approximately these values by ~100k steps.
+
+**Bottom — Positional concepts:**
+
+- **Material:** piece count advantage
+- **King Safety:** exposure to attacks
+- **Mobility:** number of legal moves available
+- **Space:** board control
+- **Threats:** can capture next move
+- **Imbalance:** asymmetric piece differences (e.g. bishop vs. knight)
+
+::::
+
+:::::
+
+**The story they tell together:** AlphaZero first learns to count pieces (material, ~30k steps), and only later develops subtler positional concepts like king safety and mobility — exactly the order in which a human learns chess.
+
 
 ---
 
 # Training Progression Assessment: GM Vladimir Kramnik
 
-\begin{columns}
-\begin{column}{0.60\textwidth}
-\begin{enumerate}
-\item \textbf{16k to 32k:} Material Value in Complex Positions
-\item \textbf{32k to 64k:} King Safety in Imbalanced Positions
-\item \textbf{64k to 128k:} King Safety \& Material Sacrifices in Complex Positions
-\end{enumerate}
-\vspace{0.5cm}
-Tactical skills appear to \textbf{precede positional skills} as AlphaZero learns
-\end{column}
-\begin{column}{0.36\textwidth}
+:::: columns
+
+::: {.column width="80%"}
+
+Qualitative evaluation by World Chess Champion Vladimir Kramnik,
+who analyzed AlphaZero's play at three training checkpoints:
+
+1. **16k to 32k steps:** understands material value in complex positions —
+   knows which pieces are worth sacrificing and which are not
+
+2. **32k to 64k steps:** develops king safety awareness in imbalanced positions —
+   starts recognizing when the king is genuinely at risk
+
+3. **64k to 128k steps:** combines king safety with material sacrifices
+   in complex positions — a hallmark of grandmaster-level strategic play
+
+:::
+
+::: {.column width="18%"}
+
 \includegraphics[width=\columnwidth]{imgs/kramnik_photo.png}
-\end{column}
-\end{columns}
+
+:::
+
+::::
+
+## Key Insight:
+
+- Tactical skills appear to precede positional skills as AlphaZero learns
+- This is a **human expert's qualitative confirmation** of what the concept
+probes showed quantitatively: AlphaZero's learning curriculum —
+material first, positional concepts later — mirrors how chess mastery
+develops in humans.
 
 ---
 
@@ -247,49 +464,103 @@ Tactical skills appear to \textbf{precede positional skills} as AlphaZero learns
 
 # Exploring Activations with Unsupervised Methods
 
-\textbf{Goal:} Find Feature Detectors embedded within Network
+**Goal:** Find feature detectors embedded within the network —
+*without* using predefined human concepts as supervision.
 
-\textbf{Methods:}
-\begin{enumerate}
-\item[a)] Non-Negative Matrix Factorization of each layer's channels
-\item[b)] Correlation of Input Board with each channel's activations
-\end{enumerate}
+## In plain English
+Unlike probing (which asks *"is concept X encoded here?"*),
+these methods ask *"what patterns exist here?"* with no
+human concept assumed in advance.
 
-\begin{alertblock}{Primary Takeaway}
-Individual network layers \& channels encode \textit{feature detectors} related to human-recognizable chess concepts
-\end{alertblock}
+## Key Insight
+If unsupervised methods independently recover human-like concepts,
+it strengthens the case that AlphaZero's representations are genuinely
+structured around chess knowledge — not an artifact of the linear probe design.
 
 ---
 
-# Approach \#1: NN Matrix Factorization Analysis {.fragile}
+# Unsupervised Methods: Details
 
-For each layer $l$ with $C$ channels:
-1. Compute a matrix factorization $\mathbf{\Omega} \times \mathbf{F}$ using $K < C$ columns
+a) **Non-Negative Matrix Factorization (NMF):** decompose each layer's
+   activations into a small set of additive factors — each factor
+   represents a pattern of co-activating channels across board positions
 
-For each factor $k$ ($1\ldots K$) and input $n$ ($1\ldots N$):
-2. Visualize activations on Chess Board to find \textit{feature detectors}
+b) **Input-activation correlation:** measure the covariance between
+   each channel's activation and the raw input board —
+   reveals which input features drive individual neurons
 
-$$\hat{\mathbf{Z}}^l \in \mathbb{R}^{NHW \times C} \qquad \mathbf{\Omega}_\text{all} \in \mathbb{R}^{NHW \times K} \qquad \mathbf{F} \in \mathbb{R}^{K \times C}$$
+## Primary Takeaway
+
+Individual layers and channels encode *feature detectors*
+related to human-recognizable chess concepts —
+discovered **without any concept labels**.
+
+---
+
+# Approach #1: Non-Negative Matrix Factorization
+
+**Idea:** compress each layer's activations into $K < C$ interpretable factors,
+then visualize each factor on the board to find *feature detectors*.
+
+**Step 1:** Stack all activations for layer $l$ with $C$ channels:
+$\hat{\mathbf{Z}}^l \in \mathbb{R}^{NHW \times C}$
+
+**Step 2:** Factorize $\hat{\mathbf{Z}}^l \approx \mathbf{\Omega}_\text{all}\mathbf{F}$:
 
 $$\mathbf{F}^*,\, \mathbf{\Omega}^*_\text{all} = \min_{\mathbf{F},\,\mathbf{\Omega}_\text{all}} \left\|\hat{\mathbf{Z}}^l - \mathbf{\Omega}_\text{all}\mathbf{F}\right\|^2_2 \qquad \mathbf{F},\ \mathbf{\Omega}_\text{all} \geq 0$$
+
+- $\mathbf{\Omega}_\text{all} \in \mathbb{R}^{NHW \times K}$ — factor scores per board square
+- $\mathbf{F} \in \mathbb{R}^{K \times C}$ — which channels compose each factor
+
+**Step 3:** For each factor $k$ and input $n$, visualize $\mathbf{\Omega}_k$ on the board.
+
+---
+
+# Approach #1: Results
+
+## In plain English
+Each factor $k$ groups channels that fire together.
+Plotting its scores on the board reveals *where* that pattern activates —
+if it traces diagonals or controlled squares, the network learned that concept
+without being told to.
+
+## Key Insight
+These patterns emerge with **no concept labels** —
+NMF discovers structure purely from activation co-occurrence.
+If the recovered factors resemble human chess concepts,
+it independently confirms the probing results.
 
 ---
 
 # Results: NN Matrix Factorization Analysis
 
 \begin{center}
-\includegraphics[width=0.80\columnwidth]{imgs/nmf_results.png}
+\includegraphics[width=0.70\columnwidth]{imgs/nmf_results.png}
 \end{center}
 
 ---
 
-# Approach \#2: Input-Activation Covariance Analysis {.fragile}
+# Approach #2: Input-Activation Covariance Analysis
 
-For each layer $l$ and channel $i$:
-1. Compute the covariance between input $\mathbf{z}^0$ and position activations
-2. Visualize covariances on Chess Board to find \textit{feature detectors}
+**Idea:** for each channel $i$ in layer $l$, measure how strongly its
+activation correlates with each input feature — then visualize on the board.
 
-$$\text{cov}(z_i^l,\, \mathbf{z}^0) = \mathbb{E}\!\left[z_i^l\, \mathbf{z}^0\right] - \mathbb{E}\!\left[z_i^l\right]\mathbb{E}\!\left[\mathbf{z}^0\right]$$
+**Step 1:** Compute covariance between channel $i$'s activation $z^l_i$
+and the raw input board $\mathbf{z}^0$:
+
+$$\text{cov}(z^l_i, \mathbf{z}^0) = \mathbb{E}\left[z^l_i \mathbf{z}^0\right] - \mathbb{E}\left[z^l_i\right]\mathbb{E}\left[\mathbf{z}^0\right]$$
+
+**Step 2:** Visualize $\text{cov}(z^l_i, \mathbf{z}^0)$ on the board to find *feature detectors*.
+
+## In plain English
+If a neuron fires whenever there is a bishop on a particular diagonal,
+its covariance with those input squares will be high —
+the map reveals *what the neuron is looking at* in the input.
+
+## Key Insight
+Unlike NMF (which finds group patterns across channels),
+this method zooms into **individual neurons** —
+asking *what specific input configuration drives this unit?*
 
 ---
 
@@ -305,9 +576,12 @@ Detecting Move-Types from a Square:
 
 \begin{center}
 \includegraphics[width=0.82\columnwidth]{imgs/covariance_results.png}
-\end{center}
 
-\footnotesize 5 covariances with different channels for the square (5, 4)
+\vfill
+
+5 covariances with different channels for the square (5, 4) E4
+
+\end{center}
 
 ---
 
