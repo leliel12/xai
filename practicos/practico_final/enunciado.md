@@ -49,7 +49,12 @@ concreta y viable, con al menos un vínculo claro con los temas del curso.
 
 ### Entrega 2 — Trabajo final
 
-**Modalidad:** Presentación oral online frente al tribunal del curso.
+**Modalidad:** Presentación oral online frente al tribunal del curso. La presentación
+puede hacerse con slides o, alternativamente, recorriendo el paper sección por sección.
+
+**Fecha límite:** el paper debe estar entregado (subido al repositorio) con al menos
+**48 horas de anticipación** a la fecha del examen oral. No se aceptan entregas
+posteriores a ese plazo.
 
 El trabajo escrito debe ser un **paper científico en inglés**, de no más de **12 páginas**
 (incluyendo referencias), con estructura académica estándar:
@@ -61,6 +66,9 @@ El trabajo escrito debe ser un **paper científico en inglés**, de no más de *
 - Resultados
 - Discusión y conclusiones
 - Referencias
+
+**Ejemplo de entrega:** [`entregas/frasesTípicas/entrega.pdf`](entregas/frasesTípicas/entrega.pdf)
+es un ejemplo de paper final que respeta la estructura y extensión pedidas.
 
 
 Template recomendado: https://www.overleaf.com/latex/templates/acm-journals-primary-article-template/cpkjqttwbshg

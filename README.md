@@ -289,6 +289,12 @@ $ python make.py week_x/slides.md
 
 ```
 
+# Student Final Projects 🏆
+
+## Class of 2026
+
+- Guido Ivetta, Sofía Martinelli — [Understanding Regional Language in Large Language Models: A SHAP-Based Analysis of Context Dependence](practicos/practico_final/entregas/frasesTípicas/entrega.pdf)
+
 # Based on: 🛐
 
 [Explainable AI Course](https://interpretable-ml-class.github.io/) Offered by Prof. Hima Lakkaraju at Harvard University (Spring 2023).
