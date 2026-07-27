@@ -19,8 +19,8 @@
 
 # Prácticos: 📝
 
-- [Preparación y Dictado de una Clase 🎓](practicos/practico_clase/enunciado.md)
-- [Práctico Final 🎓](practicos/practico_final/enunciado.md)
+- [Preparación y Dictado de una Clase 🎓](https://github.com/leliel12/xai/blob/2026/practicos/practico_clase/enunciado.md)
+- [Práctico Final 🎓](https://github.com/leliel12/xai/blob/2026/practicos/practico_final/enunciado.md)
 
 # Overview: 🧉
 
