@@ -1,5 +1,6 @@
 ---
-title: "\\emoji{microscope} XAI: Open Problems in Mechanistic Interpretability"
+title: "\\emoji{wtf} XAI Lecture 21"
+subtitle: "An Introduction to Circuits"
 bibliography: references.bib
 
 ---
@@ -10,409 +11,551 @@ bibliography: references.bib
 
 ---
 
-# Open Problems in Mechanistic Interpretability: A Whirlwind Tour
+
+# Paper 1
 
 \begin{center}
-\includegraphics[width=0.85\columnwidth]{imgs/mech_title.png}
+\includegraphics[width=0.9\columnwidth]{imgs/paper1.png}
 \end{center}
 
-\begin{center}
-\large Neel Nanda (Google DeepMind)
-\end{center}
+[@olah_mechanistic_2022]
+
 
 ---
 
-# Motivation
+# Motivations 
+
+- Reverse engineering analogy: Mechanistic interpretability aims to reverse engineer neural networks, similar to analyzing a compiled binary program.  
+- Curse of dimensionality: The motivation to overcome the exponential complexity of input spaces that makes naive interpretability infeasible.  
+- Variables and activations: Understanding activations as decomposable variables, enabling clearer reasoning about network behavior.  
+- Interpretable bases: The drive to find representations aligned with neurons or clear directions, avoiding polysemantic entanglement.  
+- Personal intuitions: The essay serves as an informal note to share intuitions that motivate ongoing work in mechanistic interpretability.  
+
+---
+
+# Contributions
+
+- Formalizing the reverse engineering analogy: Establishes a conceptual framework comparing mechanistic interpretability to reverse engineering compiled programs.  
+- Addressing the curse of dimensionality: Highlights how mechanistic interpretability can provide non-exponential descriptions of network behavior.  
+- Variables and activations: Emphasizes the need to decompose activations into understandable variables, enabling clearer reasoning about neural networks.  
+- Interpretable bases: Identifies the privileged role of neuron-aligned bases and discusses challenges posed by polysemantic neurons.  
+- Modularity and interpretable features: Reframes modularity as the ability to decompose representations into interpretable components rather than isolated modules.  
+
+---
+
+# Analogy: Programs vs Neural Networks
+
+| Regular Computer Programs      | Neural Networks                        |
+|--------------------------------|----------------------------------------|
+| Reverse Engineering            | Mechanistic Interpretability           |
+| Program Binary                 | Network Parameters                     |
+| VM / Processor / Interpreter   | Network Architecture                   |
+| Program State / Memory         | Layer Representation / Activations     |
+| Variable / Memory Location     | Neuron / Feature Direction             |
+
+---
+
+# Attacking the Curse of Dimensionality
+
+- The curse of dimensionality refers to the exponential growth of complexity in high-dimensional input spaces.  
+- Mechanistic interpretability seeks to bypass this by reverse engineering networks rather than exhaustively exploring inputs.  
+- By decomposing activations into interpretable variables, researchers can describe network behavior without brute-force enumeration.  
+- Interpretable bases aligned with neurons or clear directions reduce dimensional complexity and make analysis tractable.  
+- The essay motivates interpretability as a way to achieve concise, non-exponential descriptions of neural network mechanisms.  
+---
+
+# Simple Memory Layout & Neurons
+
+- In computer programs, a simple memory layout allows variables to be stored in clear, distinct locations.  
+- Mechanistic interpretability draws an analogy: neurons can act like memory slots, each aligned with a specific feature direction.  
+- Just as reverse engineering benefits from a straightforward memory map, analyzing networks is easier when activations correspond to interpretable neurons.  
+- The challenge arises when neurons are polysemantic, encoding multiple features at once, breaking the simplicity of the layout.  
+- The essay emphasizes that having a “simple memory layout” in neural networks — where neurons map cleanly to features — is crucial for effective interpretability.  
+---
+
+# Conclusions
+
+- Mechanistic interpretability provides a framework for reverse engineering neural networks, analogous to analyzing compiled programs.  
+- The approach offers a way to overcome the curse of dimensionality by focusing on interpretable variables and bases rather than brute-force exploration.  
+- Understanding activations as variables and aligning features with neurons enables clearer reasoning about network mechanisms.  
+- The importance of interpretable bases is highlighted, as polysemantic neurons pose significant challenges to analysis.  
+- The essay serves as an informal but influential note, motivating further research into building coherent, interpretable frameworks for complex models.  
+---
+
+
+# Paper 2 
+
+\begin{center}
+\includegraphics[width=0.9\columnwidth]{imgs/paper2.png}
+\end{center}
+[@olah2020zoom]
+---
+
+# Motivations
+
+- Scientific inspiration: Just as the microscope enabled the birth of cell biology, zooming in on neural networks may open a new paradigm for interpretability.  
+- Beyond black-box views: Instead of treating networks as opaque systems, the paper motivates analyzing individual neurons and weights as meaningful objects of study.  
+- Biological analogy: The approach mirrors biology and neuroscience, where cells and synapses are investigated to understand larger systems.  
+- Discovery of circuits: Connections between neurons form circuits that implement recognizable algorithms, motivating a systematic study of these structures.  
+- Hypothesis-driven research: The authors propose that features are fundamental units, connected into circuits, and that these patterns may be universal across models.  
+- Foundation for interpretability: If these hypotheses hold, circuits could provide a rigorous, falsifiable basis for understanding neural networks.  
+
+---
+# Historical Inspiration & Black-Box Challenge
 
 \begin{columns}
-\begin{column}{0.52\textwidth}
-\begin{alertblock}{Key Question}
-What should interpretability look like in a post GPT-4 world?
-\end{alertblock}
 
-- Large, generative language models are a **big deal**
-- Models will keep scaling — what work done now will matter in the future?
-  - Emergent capabilities keep arising
-  - Many mundane problems go away
-  - A single massive foundation model
-\end{column}
-\begin{column}{0.45\textwidth}
-\begin{center}
-\includegraphics[width=\columnwidth]{imgs/mech_motivation.png}
-\end{center}
-\end{column}
+  \column{0.6\textwidth}
+    \begin{itemize}
+      \item Historical analogy: The invention of the microscope allowed scientists to move beyond speculation and directly observe cells.  
+      \item Overcoming the black-box: Zooming in on neural networks mirrors this shift, enabling analysis of neurons and weights instead of treating models as opaque systems.  
+      \item Curse of dimensionality: By focusing on interpretable variables and circuits, researchers avoid brute-force exploration of vast input spaces, making analysis tractable.  
+      \item Scientific paradigm: Just as cell biology emerged from microscopy, mechanistic interpretability can emerge from detailed study of circuits.  
+    \end{itemize}
+
+  \column{0.4\textwidth}
+    \begin{center}
+      \includegraphics[width=0.9\columnwidth]{imgs/micrographia2.jpg}
+
+   \vspace{0.5em}
+
+   \footnotesize Hooke’s \textit{Micrographia} revealed a rich microscopic world as seen through a microscope, including the initial discovery of cells.  
+   Images from the National Library of Wales.
+  \end{center}
+
 \end{columns}
 
 ---
 
-# Inputs and Outputs Are Not Enough
+# Three Speculative Claims (Introduction)
 
-\begin{center}
-\includegraphics[width=0.88\columnwidth]{imgs/mech_captcha.png}
-\end{center}
-
-\begin{alertblock}{ARC Evaluation Example}
-Model messages a TaskRabbit worker to solve a CAPTCHA for it. When asked if it's a robot, the model \textit{reasons}: \textbf{"I should not reveal that I am a robot. I should make up an excuse why I cannot solve CAPTCHAs."} — then lies to the worker. We need to study model internals.
-\end{alertblock}
-
+- Circuits research is still in its early stage, similar to cell biology after the invention of the microscope.  
+- Speculative claims can guide progress, offering hypotheses to test and refine.  
+- Neural networks may follow universal principles, with circuits as fundamental units.  
+- The next section introduces three claims to spark debate and future research.  
 ---
 
-# Goal: Understand Model Cognition
-
-\begin{center}
-\vspace{2em}
-\Large \textbf{Goal:} Understand Model Cognition
-
-\vspace{1em}
-\large Is it aligned, or telling us what we want to hear?
-\end{center}
-
----
-
-# What is a Transformer?
-
-\begin{columns}
-\begin{column}{0.55\textwidth}
-- **Input:** Sequences of words
-- **Output:** Probability distribution over the next word
-- **Residual stream:** A sequence of representations
-  - One per input word, per layer
-  - Each layer is an incremental update
-  - Represents the word plus context
-- **Attention:** Moves information *between* words
-  - Made of heads, each acts independently
-- **MLP:** Processes information *once* it's been moved to a word
-\end{column}
-\begin{column}{0.42\textwidth}
-\begin{center}
-\includegraphics[width=\columnwidth]{imgs/mech_transformer.png}
-\end{center}
-\end{column}
-\end{columns}
-
----
-
-# What is Mechanistic Interpretability?
-
----
-
-# What is Mechanistic Interpretability?
-
-\begin{columns}
-\begin{column}{0.55\textwidth}
-- **Goal:** Reverse engineer neural networks
-  - Like reverse-engineering a compiled binary to source code
-- **Hypothesis:** Models learn human-comprehensible algorithms and can be understood, if we learn how to make it legible
-- Understanding **features** — the variables inside the model
-- Understanding **circuits** — the algorithms learned to compute features
-- **Key property:** Distinguishes between cognition with identical output
-- A deep knowledge of circuits is crucial to understand, predict and **align** model behaviour
-\end{column}
-\begin{column}{0.42\textwidth}
-\begin{center}
-\includegraphics[width=\columnwidth]{imgs/mech_car_detector.png}
-\end{center}
-\end{column}
-\end{columns}
-
----
-
-# A Growing Area of Research
-
-\begin{center}
-\includegraphics[width=0.9\columnwidth]{imgs/mech_growing_area1.png}
-\end{center}
-
-Mathematical Framework for Transformer Circuits [@elhage2021mathematical], Key-Value Memories, ROME, Gender Bias via Causal Mediation, Toy Models of Superposition [@elhage2022superposition], ...
-
----
-
-# A Growing Area of Research
-
-\begin{center}
-\includegraphics[width=0.9\columnwidth]{imgs/mech_growing_area2.png}
-\end{center}
-
-Multimodal Neurons, Compositional Explanations, Causal Abstractions, SGD Learns Parities, Curve Circuits, Quantization Model of Neural Scaling, ...
-
----
-
-# Features = Variables: What Does the Model Know?
-
-\begin{center}
-\includegraphics[width=0.8\columnwidth]{imgs/mech_multimodal_neurons.png}
-\end{center}
-
-Neurons respond to high-level semantic concepts: **regions, persons, emotions, religions, traits, art styles** — across multiple modalities (Goh et al., Distill 2021 / neuroscope.io)
-
----
-
-# Features: Linear Representation of Quantities
-
-\begin{center}
-\includegraphics[width=0.8\columnwidth]{imgs/mech_number_feature.png}
-\end{center}
-
-A neuron encoding **number (implicitly of people)** — activates on "150 guests", "six", "70 guests", "40 people" (Softmax Linear Units, Elhage et al.)
-
-\begin{exampleblock}{Tool: Neuroscope (\texttt{neuroscope.io})}
-Browse dataset examples maximally activating any neuron in GPT-2/GPT-Neo
-\end{exampleblock}
-
-**Open Problem:** Studying Learned Features
-
----
-
-# Circuits = Functions: How Does the Model Think?
-
----
-
-# Induction Heads: A Key Circuit
-
-\begin{center}
-\includegraphics[width=0.82\columnwidth]{imgs/mech_induction_heads.png}
-\end{center}
-
-\begin{block}{Induction Head (2-Layer Attention-Only Models)}
-If the current token has appeared before, attend back to it and predict: \textbf{"copy the next token after the previous occurrence"}
-\end{block}
-
-- Layer 0: identifies "I follow [D]" at position $n$
-- Layer 1: searches for tokens containing "I follow [D]" and copies the next logit
-
-[@elhage2021mathematical] — **Open Problem:** Analysing Toy Language Models
-
----
-
-# Mechanistic Understanding of Induction Heads
-
-\begin{center}
-\includegraphics[width=0.85\columnwidth]{imgs/mech_induction_illustrated.png}
-\end{center}
-
-A complete mechanistic understanding: we can trace exactly how information flows through both layers to produce the induction behaviour (Callum McDougall)
-
----
-
-# Case Study: Emergence of In-Context Learning
-
-\begin{center}
-\includegraphics[width=0.9\columnwidth]{imgs/mech_in_context_learning.png}
-\end{center}
-
-- Models with $> 1$ layer have an **abrupt improvement** in in-context learning
-- Induction heads form in a **phase change** during training
-- Mechanistic interpretability explains *why* — induction heads enable pattern completion
-
-[@olsson2022incontext] — **Open Problem:** Analysing Training Dynamics
-
----
-
-# The Mindset of Mechanistic Interpretability
-
-- **Alien neuroscience:** Models *are* interpretable, but not in our language — if we learn to think like them, mysteries dissolve
-- **Skepticism:** It's extremely easy to trick yourself in interpretability
-  - **Zoom In:** Rigour and depth over breadth and scalability
-- **Ambition:** It *is* possible to achieve deep and rigorous understanding
-- A bet that models have underlying principles and structures that **generalise**
-
-\begin{exampleblock}{Personal Motivation (Neel Nanda)}
-Easy to get started, fast feedback loops, cross between maths, CS, natural sciences and truth-seeking. Code early and often — get contact with reality.
-\end{exampleblock}
-
----
-
-# Case Study: Grokking
-
-\begin{center}
-\includegraphics[width=0.72\columnwidth]{imgs/mech_grokking.png}
-\end{center}
-
-\begin{alertblock}{Mystery}
-Model perfectly memorises training data after $\sim$1K steps — then suddenly \textbf{generalises} after $\sim$100K more steps. Why?
-\end{alertblock}
-
-Grokking: Generalization Beyond Overfitting (Power et al.)
-
----
-
-# The Modular Addition Circuit
-
-\begin{center}
-\includegraphics[width=0.88\columnwidth]{imgs/mech_modular_addition.png}
-\end{center}
-
-The model computes $(a + b) \mod p$ via **Fourier / trig identities**:
-- Embedding maps $a \to \sin(wa),\cos(wa)$
-- Attention computes $\sin(w(a{+}b)),\cos(w(a{+}b))$
-- Unembed computes $\text{Logit}(c) \propto \cos(w(a{+}b{-}c))$
-
-Grokking = transition from memorisation to using this elegant generalising algorithm
-
-[@nanda2023progress] — **Open Problem:** Interpreting Algorithmic Models
-
----
-
-# Frontier: Polysemanticity \& Superposition
-
----
-
-# Polysemanticity: One Neuron, Many Concepts
-
-\begin{center}
-\includegraphics[width=0.85\columnwidth]{imgs/mech_polysemanticity.png}
-\end{center}
-
-A single neuron activates for **"game"** across completely unrelated contexts: dice, poetry, fiction, sports. This is **polysemanticity** — one neuron represents many features.
-
-**Open Problem:** Exploring Polysemanticity \& Superposition
-
----
-
-# Hypothesis: Polysemanticity is due to Superposition
-
-\begin{center}
-\includegraphics[width=0.85\columnwidth]{imgs/mech_superposition.png}
-\end{center}
-
-\begin{block}{Superposition Hypothesis (Elhage et al. 2022)}
-As feature sparsity increases, models pack more features than dimensions using near-orthogonal directions — at the cost of "positive interference"
-\end{block}
-
-- **0\% sparsity:** 2 most important features get dedicated orthogonal dimensions
-- **80\% sparsity:** 4 features embedded as antipodal pairs
-- **90\% sparsity:** 5 features embedded as a pentagon
-
-[@elhage2022superposition] — **Open Problem:** Exploring Polysemanticity \& Superposition
-
----
-
-# Geometry of Superposition
-
-\begin{center}
-\includegraphics[width=0.85\columnwidth]{imgs/mech_geometry_superposition.png}
-\end{center}
-
-As sparsity increases, features organise into **geometric structures**: dedicated dimensions → digons (antipodal pairs) → triangles → tetrahedra → pentagons → square antiprisms. Each structure packs more features per dimension.
-
-[@elhage2022superposition]
-
----
-
-# Case Study: Interpretability in the Wild
-
-\begin{center}
-\includegraphics[width=0.88\columnwidth]{imgs/mech_ioi_circuit.png}
-\end{center}
-
-**"When John and Mary went to the store, John gave the bag to $\to$ Mary"**
-
-Full circuit found in GPT-2 small: Previous Token Heads $\to$ Duplicate Token Heads + Induction Heads $\to$ S-Inhibition Heads $\to$ Name Mover Heads
-
-[@wang2022ioi] — **Open Problem:** Finding Circuits in the Wild
-
----
-
-# Refining Ablations: Mechanistic Interpretability as Validation
-
-\begin{center}
-\includegraphics[width=0.75\columnwidth]{imgs/mech_ablations.png}
-\end{center}
-
-Activation patching reveals **Backup Name Mover Heads** — heads that only activate when the primary Name Mover Heads are ablated. A **Negative Backup Head** also emerges, opposing the backup.
-
-\begin{exampleblock}{Key insight}
-Mechanistic understanding acts as a \textbf{validation set} — it reveals structure invisible to pure ablation studies
-\end{exampleblock}
-
-**Open Problem:** Techniques, Tooling and Automation
-
----
-
-# Technique: Activation Patching
-
-\begin{center}
-\includegraphics[width=0.8\columnwidth]{imgs/mech_activation_patching.png}
-\end{center}
-
-\begin{block}{Activation Patching}
-Run two forward passes (clean and corrupted input). Patch one activation from the clean run into the corrupted run. Measure how much the output recovers — identifies which activations are causally important.
-\end{block}
-
-Used to localise factual associations in GPT (Meng et al., ROME) — **Open Problem:** Techniques, Tooling and Automation
-
----
-
-# Linear Representation Hypothesis
-
-\begin{center}
-\includegraphics[width=0.78\columnwidth]{imgs/mech_linear_representation.png}
-\end{center}
-
-\begin{block}{Linear Representation Hypothesis}
-Models represent features as \textbf{directions} in activation space — not as individual neurons. Models have underlying principles with predictive power.
-\end{block}
-
-- "king $-$ man $+$ woman $\approx$ queen" — gender as a linear direction
-- Verb tense as a linear direction: walking $\to$ walked, swimming $\to$ swam
-
----
-
-# Case Study: Emergent World Representations in Othello-GPT
-
-\begin{center}
-\includegraphics[width=0.85\columnwidth]{imgs/mech_othello_gpt.png}
-\end{center}
-
-A transformer trained **only on legal Othello move sequences** develops an internal model of the board state — demonstrated via interventions that change the probe output as expected [@li2023othello]
-
----
-
-# Othello-GPT: A Linear World Model
-
-\begin{center}
-\includegraphics[width=0.85\columnwidth]{imgs/mech_othello_linear.png}
-\end{center}
-
-\begin{exampleblock}{Linear Representation Hypothesis confirmed}
-Othello-GPT represents board state as \textit{"my colour vs their's"} — a linear model that \textbf{generalises}, \textbf{survives falsification}, and has \textbf{predictive power}
-\end{exampleblock}
-
-**Open Problem:** Future Work on Othello-GPT
-
----
-
-# Learning More
-
-\begin{columns}
-\begin{column}{0.5\textwidth}
-- **200 Concrete Open Problems in Mechanistic Interpretability**
-  \newline \footnotesize\texttt{neelnanda.io/concrete-open-problems}
-- **Getting Started in Mechanistic Interpretability**
-  \newline \footnotesize\texttt{neelnanda.io/getting-started}
-\end{column}
-\begin{column}{0.5\textwidth}
-- **A Comprehensive Mechanistic Interpretability Explainer**
-  \newline \footnotesize\texttt{neelnanda.io/glossary}
-- **TransformerLens** (Python library)
-  \newline \footnotesize\texttt{github.com/neelnanda-io/TransformerLens}
-\end{column}
-\end{columns}
-
-\vfill
-
-\begin{alertblock}{Open Problems covered in this talk}
-Studying Learned Features $\cdot$ Analysing Toy Language Models $\cdot$ Analysing Training Dynamics $\cdot$ Interpreting Algorithmic Models $\cdot$ Exploring Polysemanticity \& Superposition $\cdot$ Finding Circuits in the Wild $\cdot$ Techniques, Tooling and Automation $\cdot$ Future Work on Othello-GPT
-\end{alertblock}
-
----
-
-\begin{center}
-\Huge Thank You!
-\end{center}
-
----
-
-# References {.allowframebreaks}
+# Three Speculative Claims (Overview)
 
 \footnotesize
+**Three Speculative Claims about Neural Networks**  
+
+- *Claim 1: Features* — Fundamental units, corresponding to directions in activation space.  
+- *Claim 2: Circuits* — Features connected by weights, forming computational subgraphs.  
+- *Claim 3: Universality* — Similar features and circuits appear across models and tasks.  
+
+---
+
+# Claim 1: Features
+
+- Features are the fundamental unit of neural networks.  
+- They correspond to **directions** in activation space, defined as linear combinations of neurons in a layer.  
+- Individual neurons can often represent useful features, but in polysemantic cases combinations of neurons provide clearer insight.  
+- Features can be rigorously studied and understood, offering a structured way to analyze network behavior.  
+- This claim positions features as the basic building blocks for interpretability.  
+
+---
+# Example 1: Curve Detectors
+
+\begin{columns}
+
+\column{0.5\textwidth}
+
+\begin{itemize}
+  \item Curve detectors are an early example of interpretable features in vision models.  
+  \item They respond strongly to curved shapes, acting as specialized feature directions.  
+  \item These detectors illustrate how features can correspond to meaningful visual concepts.  
+  \item Studying them shows that circuits can implement recognizable algorithms.  
+  \item This example supports the claim that features are fundamental units of neural networks.  
+\end{itemize}
+
+\column{0.5\textwidth}
+
+\begin{center}
+  \includegraphics[width=0.9\columnwidth]{imgs/curves.png}
+
+  \vspace{0.5em}
+
+  \footnotesize Example of curve detectors in vision models.  
+  They highlight how features correspond to interpretable directions in activation space.
+\end{center}
+
+\end{columns}
+
+---
+
+
+# Arguments (Slide 1)
+
+\begin{columns}
+  \column{0.1\textwidth}
+    \includegraphics[width=\linewidth]{imgs/arg-fv.png}
+
+  \column{0.9\textwidth}
+    \textbf{Argument 1: Feature Visualization} \newline
+    Optimizing the input to cause curve detectors to fire reliably produces curves. 
+    This establishes a causal link, since everything in the resulting image was added to cause the neuron to fire more. 
+    You can learn more about feature visualization \href{https://distill.pub/2017/feature-visualization/}{here}.
+\end{columns}
+
+\vspace{1em}
+
+\begin{columns}
+  \column{0.1\textwidth}
+    \includegraphics[width=\linewidth]{imgs/arg-data.png}
+
+  \column{0.9\textwidth}
+    \textbf{Argument 2: Dataset examples} \newline
+    The ImageNet images that cause these neurons to strongly fire are reliably curves in the expected orientation. 
+    The images that cause them to fire moderately are generally less perfect curves or curves off orientation.
+\end{columns}
+
+\vspace{1em}
+
+---
+# Arguments (Slide 2)
+
+\begin{columns}
+  \column{0.1\textwidth}
+    \includegraphics[width=\linewidth]{imgs/arg-synthetic.png}
+
+  \column{0.9\textwidth}
+    \textbf{Argument 3: Synthetic Examples} \newline
+    Curve detectors respond as expected to a range of synthetic curves images created with varying orientations, curvatures, and backgrounds. 
+    They fire only near the expected orientation, and do not fire strongly for straight lines or sharp corners.
+\end{columns}
+
+\vspace{1em}
+
+\begin{columns}
+  \column{0.1\textwidth}
+    \includegraphics[width=\linewidth]{imgs/arg-tune.png}
+
+  \column{0.9\textwidth}
+    \textbf{Argument 4: Joint Tuning} \newline
+    If we take dataset examples that cause a neuron to fire and rotate them, they gradually stop firing and the curve detectors in the next orientation begins firing. 
+    This shows that they detect rotated versions of the same thing. Together, they tile the full 360 degrees of potential orientations.
+\end{columns}
+---
+# Arguments (Slide 3)
+
+\begin{columns}
+  \column{0.1\textwidth}
+    \includegraphics[width=\linewidth]{imgs/arg-weights.png}
+
+  \column{0.9\textwidth}
+    \textbf{Argument 5: Feature Implementation (circuit-based argument)} \newline
+    By looking at the circuit constructing the curve detectors, we can read a curve detection algorithm off of the weights. 
+    We also don’t see anything suggestive of a second alternative cause of firing, although there are many smaller weights we don’t understand the role of.
+\end{columns}
+
+\vspace{1em}
+
+\begin{columns}
+  \column{0.1\textwidth}
+    \includegraphics[width=\linewidth]{imgs/arg-use.png}
+
+  \column{0.9\textwidth}
+    \textbf{Argument 6: Feature Use (circuit-based argument)} \newline
+    The downstream clients of curve detectors are features that naturally involve curves (e.g. circles, 3d curvature, spirals…). 
+    The curve detectors are used by these clients in the expected manner.
+\end{columns}
+
+\vspace{1em}
+---
+# Argument 7: Handwritten Circuits (Slide 4)
+
+\begin{columns}
+  \column{0.1\textwidth}
+    \includegraphics[width=\linewidth]{imgs/arg-hand.png}
+
+  \column{0.9\textwidth}
+    \textbf{Argument 7: Handwritten Circuits (circuit-based argument)} \newline
+    Based on our understanding of how curve detectors are implemented, we can do a cleanroom reimplementation, 
+    hand setting all weights to reimplement curve detection. 
+    These weights are an understandable curve detection algorithm, and significantly mimic the original curve detectors.
+\end{columns}
+---
+
+# Example 2: High-Low Frequency Detectors (Image)
+
+\begin{columns}
+  \column{0.45\textwidth}
+    \includegraphics[width=\linewidth]{imgs/high-low.png}
+
+  \column{0.55\textwidth}
+    \textbf{Visualization of High-Low Frequency Detectors} \newline
+    The image shows how these detectors activate in response to alternating bands of high and low frequency signals. 
+    Bright regions indicate strong activation, highlighting the detector’s sensitivity to structured frequency contrasts. 
+    This visualization makes clear that the feature corresponds to a meaningful and interpretable direction in the model’s activation space.
+\end{columns}
+---
+# Example 3: Pose-Invariant Dog Head Detector
+
+\begin{columns}
+  \column{0.5\textwidth}
+    \includegraphics[width=\linewidth]{imgs/dog-pose.png}
+
+  \column{0.5\textwidth}
+    \textbf{Pose-Invariant Dog Head Detector} \newline
+    This detector activates reliably for dog heads across a wide range of poses and orientations. 
+    It demonstrates that neural networks can learn features that are robust to changes in viewpoint, 
+    capturing the semantic concept of a “dog head” rather than a specific angle. 
+    The visualization shows consistent activation regardless of whether the dog is facing forward, sideways, or tilted, 
+    highlighting the feature’s invariance to pose.
+\end{columns}
+---
+# Claim 2: Circuits
+
+Features connect through weights, forming circuits that can be rigorously studied.
+Neurons are linear combinations of previous layers, so understanding features also means analyzing their connections.  
+Surprisingly, circuits are not messy: they reveal rich, often symmetric structures.  
+Weights become interpretable, allowing us to read meaningful algorithms directly from them.  
+This opens the door to studying circuits as tractable and meaningful objects.
+---
+
+# Circuit 1: Curve Detectors
+
+- Curve detectors are a family of units detecting curves in different angular orientations.  
+- They are implemented from earlier, less sophisticated curve detectors and line detectors.  
+- These detectors feed into the next layer to create 3D geometry and complex shape detectors.  
+- While there are many smaller connections to other features, the main story is the interaction between early curve detectors and full curve detectors.  
+- This section focuses on how curve detectors are built from earlier features and connect to the rest of the model.
+---
+# Circuit 1: Curve Detectors (Visualization)
+
+\begin{center}
+  \includegraphics[width=0.8\textwidth]{imgs/curve-circuit.png}
+
+  \vspace{0.5em}
+
+  {\tiny Visualization of how curve detectors emerge from earlier line and curve features. 
+  The diagram highlights the connections that build up to full curve detectors, 
+  showing their role as building blocks for higher-level geometry and shape recognition.}
+\end{center}
+---
+# Circuit 1: Curve Detectors (Weights)
+
+\begin{center}
+  \begin{minipage}{0.45\textwidth}
+    \includegraphics[width=\linewidth]{imgs/curve-weights-a.png}
+
+   \vspace{0.3em}
+
+   {\tiny The raw weights between the early curve detector and late curve detector in the same orientation are a curve of positive weights surrounded by small negative or zero weights.}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.45\textwidth}
+    \includegraphics[width=\linewidth]{imgs/curve-weights-b.png}
+
+   \vspace{0.3em}
+
+   {\tiny This can be interpreted as looking for “tangent curves” at each point along the curve.}
+  \end{minipage}
+\end{center}
+\vspace{1em}
+
+\small
+The connection between early and late curve detectors reveals a structured pattern in the weights. 
+Strong positive values align with the curve’s orientation, while surrounding negative or zero weights suppress irrelevant activations. 
+This arrangement can be interpreted as the detector searching for “tangent curves” along each point of the curve, 
+showing how meaningful algorithms can be read directly from the weight matrices.
+---
+# Excitation and Inhibition in Curve Detectors
+
+\begin{center}
+  \includegraphics[width=0.6\textwidth]{imgs/excited-inhibited.png}
+
+  \vspace{0.5em}
+
+\end{center}
+  \tiny Curve detectors are excited by earlier detectors in similar orientations and inhibited by detectors in opposing orientations. 
+  This pattern shows that weights are meaningful, reflecting geometric symmetries. 
+  Strong positive weights align with tangent curves, while negative weights suppress opposite orientations. 
+  The rotation of weights with detector orientation illustrates an equivariant circuit structure.
+---
+# Circuit 2: Oriented Dog Head Detection
+
+- This circuit detects dog heads with sensitivity to orientation.
+- Built from earlier pose-invariant dog head detectors combined with orientation-specific features.
+- Highlights how circuits integrate semantic concepts (dog head) with geometric properties (orientation).
+- Demonstrates that interpretable algorithms emerge from feature connections.
+---
+# Circuit 2: Oriented Dog Head Detection (Visualization)
+
+\begin{center}
+  \includegraphics[width=0.6\textwidth]{imgs/oriented-dog-head.png}
+
+  \vspace{0.5em}
+
+\end{center}
+  \tiny Visualization of oriented dog head detectors. 
+  The circuit shows how orientation-specific features modulate the activation of dog head detectors, 
+  producing selective responses depending on the head’s angle.
+---
+# Circuit 2: Oriented Dog Head Detection (Unioning Over Cases)
+
+\begin{center}
+  \includegraphics[width=0.6\textwidth]{imgs/oriented-weights-a.png}
+
+  \vspace{0.5em}
+
+\end{center}
+  \tiny The network detects dog heads facing left and right through mirrored pathways. 
+  These pathways inhibit each other, creating XOR-like properties. 
+  By unioning over cases, the model builds invariant multifaceted units that respond to both orientations. 
+  Connections show selectivity, e.g., “head with neck” units activate only on the correct side.
+---
+# Circuit 2: Oriented Dog Head Detection (Union Step)
+
+\begin{center}
+  \includegraphics[width=0.4\textwidth]{imgs/union-step.png}
+
+  \vspace{0.5em}
+
+\end{center}
+  \tiny The union step shows how the network merges left- and right-facing dog head detectors. 
+  Excitation regions extend differently depending on orientation, allowing snouts to converge at the same point. 
+  This mechanism refines invariance by aligning features across orientations. 
+  The circuit illustrates how detailed weight structures encode sophisticated geometric relationships, 
+  a topic to be explored further in future analysis.
+---
+# Circuit 3: Cars in Superposition
+
+\begin{columns}
+ \column{0.5\textwidth}
+
+  \begin{itemize}
+    \item In mixed4c, a mid-late layer of InceptionV1, there is a car detecting neuron.  
+    \item This neuron integrates features from previous layers.  
+    \item It looks for wheels at the bottom of its convolutional window.  
+    \item It also looks for windows at the top, combining both cues to detect cars.  
+  \end{itemize}
+
+ \column{0.5\textwidth}
+  \begin{center}
+    \includegraphics[width=\linewidth]{imgs/cars-superposition.png}
+
+   \vspace{0.5em}
+
+   {\tiny Visualization of the car detector in superposition.  
+    The neuron combines wheel and window features to identify cars.}
+   \end{center}
+\end{columns}
+---
+# Circuit 3: Cars in Superposition (Superposition Phenomenon)
+
+\begin{columns}
+  \column{0.4\textwidth}
+    \begin{center}
+      \includegraphics[width=\linewidth]{imgs/cars-superposition.png}
+
+   \vspace{0.5em}
+
+   {\tiny Visualization of car features mixing with dog detectors.}
+    \end{center}
+
+  \column{0.6\textwidth}
+
+  \begin{itemize}
+     \item Instead of creating another pure car detector, the model spreads car features across neurons linked to dog detectors.
+     \item This suggests polysemantic neurons are deliberate, intertwining car and dog detection.
+     \item The phenomenon is called \textit{superposition}.
+     \item Superposition conserves neurons, allowing reuse for more important tasks.
+     \item As long as cars and dogs don’t co-occur, the model can later retrieve the dog feature accurately without dedicating a separate neuron.
+   \end{itemize}
+\end{columns}
+---
+# Circuit 3: Cars in Superposition (Superposition Phenomenon)
+
+\begin{columns}
+  \column{0.5\textwidth}
+    \begin{center}
+    \includegraphics[width=\linewidth]{imgs/cars-superposition2.png}
+
+    \vspace{0.5em}
+
+   {\tiny Visualization of car features mixing with dog detectors.}
+    \end{center}
+
+  \column{0.5\textwidth}
+
+   \begin{itemize}
+      \item Instead of creating another pure car detector, the model spreads car features across neurons linked to dog detectors.  
+      \item This suggests polysemantic neurons are deliberate, intertwining car and dog detection.  
+      \item The phenomenon is called \textit{superposition}.  
+      \item Superposition conserves neurons, allowing reuse for more important tasks.  
+      \item As long as cars and dogs don’t co-occur, the model can later retrieve the dog feature accurately without dedicating a separate neuron.  
+    \end{itemize}
+\end{columns}
+
+---
+
+# Recurring Patterns in Circuits
+
+\begin{itemize}
+  \item In InceptionV1 and other models, recurring abstract patterns appear:
+    \begin{itemize}
+      \item Equivariance (curve detectors).  
+      \item Unioning over cases (pose-invariant dog head detector).  
+      \item Superposition (car detector).  
+    \end{itemize}
+  \item In biology, a circuit motif is a recurring pattern in complex graphs such as transcription networks or biological neural networks.  
+  \item Motifs are useful because understanding one motif provides leverage across all graphs where it occurs.  
+  \item Studying motifs may become more important than analyzing individual circuits in the long run.  
+  \item A solid foundation of well-understood circuits is necessary before deeper motif investigations.  
+\end{itemize}
+
+---
+# Claim 3: Universality
+
+\begin{itemize}
+  \item Universality refers to the recurrence of similar features and circuits across different models and tasks.  
+  \item Neural networks often develop analogous detectors, even when trained on distinct datasets.  
+  \item This suggests the presence of general principles guiding feature formation.  
+  \item Universality highlights the potential for transferable insights across architectures.  
+\end{itemize}
+---
+# Claim 3: Universality (Example)
+
+\begin{columns}
+  \column{0.5\textwidth}
+    \begin{center}
+      \includegraphics[width=\linewidth]{imgs/unit-2-3.png}
+
+   \vspace{0.5em}
+
+   {\tiny Visualization of a universal feature appearing across models.}
+    \end{center}
+
+  \column{0.5\textwidth}
+    \begin{itemize}
+      \item Certain units, such as curve detectors or object parts, emerge repeatedly.
+      \item The same structural motifs can be observed in different architectures.
+      \item These recurring features strengthen the claim of universality.
+    \end{itemize}
+\end{columns}
+---
+# Claim 3: Universality (Implications)
+
+\begin{itemize}
+  \item Universality implies that studying one circuit can provide understanding of many others.
+  \item Shared motifs across models suggest deeper algorithmic principles.
+  \item This perspective shifts focus from isolated circuits to generalizable structures.
+  \item Recognizing universality may accelerate interpretability research.
+\end{itemize}
+---
+# Interpretability as a Natural Science
+
+\begin{itemize}
+  \item Interpretability is framed as a natural science: the study of circuits and features in neural networks resembles the study of biological systems.  
+  \item Progress depends on careful observation, cataloging, and comparison of recurring motifs across models.  
+  \item The discipline emphasizes empirical investigation rather than purely theoretical speculation.  
+  \item Just as biology advanced by identifying structures and functions, interpretability advances by mapping circuits and their roles.  
+  \item This perspective positions interpretability as a systematic field, aiming to uncover general principles of artificial intelligence.  
+\end{itemize}
+---
+# References
+
+
+
